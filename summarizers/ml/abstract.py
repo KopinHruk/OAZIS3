@@ -2,7 +2,7 @@ from transformers import pipeline
 
 
 def get_abstract_summary(text):
-    summarizer = pipeline("summarization", model='cointegrated/rut5-base-absum')
+    summarizer = pipeline("summarization", model='csebuetnlp/mT5_multilingual_XLSum')
 
     summary_text = summarizer(text, max_length=4000, min_length=5, do_sample=False)
     summary_text = summary_text[0]['summary_text']

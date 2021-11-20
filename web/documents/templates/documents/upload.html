@@ -80,6 +80,11 @@
     display: block;
     margin-top: 10px;
 }
+
+.btn
+{
+margin-top: 20px;
+}
 </style>
 
 <div class="container">
@@ -104,7 +109,7 @@
                 <form method="post" class="form-signin" enctype="multipart/form-data" >
                     {% csrf_token %}
                     {{ form }}
-                    <input class="btn btn-lg btn-primary btn-block" type="submit" value="Process">
+                    <input class=" btn btn-lg btn-primary btn-block" type="submit" value="Process">
                 </form>
 
             </div>

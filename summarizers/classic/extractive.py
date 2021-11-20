@@ -110,13 +110,11 @@ class ProcessDocs:
         return unique_words[ind]
 
     def summarize(self):
-        summarized_docs = []
-        key_words = []
+        output = []
         for document in tqdm(self.documents):
-            summarized_docs.append(self._summarize_document(document))
-            key_words.append(self._get_key_words(document))
+            output.append((self._summarize_document(document), self._get_key_words(document)))
 
-        return summarized_docs, key_words
+        return output
 
 
 if __name__ == '__main__':
