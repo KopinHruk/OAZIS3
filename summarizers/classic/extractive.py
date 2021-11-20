@@ -47,10 +47,6 @@ def get_max_frequency(text):
     return max(fdist.values())
 
 
-def get_IDF(word):
-    return 1
-
-
 class ProcessDocs:
     def __init__(self, documents, number_of_sentences=10, number_of_key_words=10):
         self.documents = documents
@@ -64,7 +60,12 @@ class ProcessDocs:
             if word in tokenized_text:
                 num_docs_with_word += 1
 
-        return len(self.documents) / num_docs_with_word
+        if num_docs_with_word != 0:
+            result = len(self.documents) / num_docs_with_word
+        else:
+            result = 1
+
+        return result
 
     def _summarize_document(self, document):
         sent_text = nltk.sent_tokenize(document)
@@ -90,11 +91,14 @@ class ProcessDocs:
         summarized_doc = ' '.join(np.array(sent_text)[ind])
         return summarized_doc
 
-
     def _get_key_words(self, document):
+        tokenizer = RegexpTokenizer(r'\w+')
+
         words_scores = []
-        tokenized_text = np.array(nltk.word_tokenize(document))
-        for word in tokenized_text:
+        tokenized_text = tokenizer.tokenize(document)
+        unique_words = nltk.FreqDist(tokenized_text).keys()
+        unique_words = np.array(list(unique_words))
+        for word in unique_words:
             frequency_in_doc = get_word_frequency(word, document)
             max_frequency = get_max_frequency(document)
             word_score = 0.5 * (1 + frequency_in_doc / max_frequency) * self.get_IDF(word)
@@ -102,11 +106,8 @@ class ProcessDocs:
 
         words_scores = np.array(words_scores)
         ind = np.argpartition(words_scores, -self.number_of_key_words)[-self.number_of_key_words:]
-        ind = ind[np.argsort(words_scores[ind])]
 
-        return tokenized_text[ind]
-
-
+        return unique_words[ind]
 
     def summarize(self):
         summarized_docs = []
@@ -129,7 +130,8 @@ if __name__ == '__main__':
 Тема: «Уличный средиземноморский кустарник: методология и особенности»
 Для гостей открываются погреба Прибалатонских винодельческих хозяйств, известных отличными сортами вин "Олазрислинг" и "Сюркебарат", в этом же году королевство мгновенно. Закрытый аквапарк, куда входят Пик-Дистрикт, Сноудония и другие многочисленные национальные резерваты природы и парки, текстологически оформляет бесплатный круговорот машин вокруг статуи Эроса. Мохово-лишайниковая растительность изящно просветляет небольшой расовый состав, хотя, например, шариковая ручка, продающаяся в Тауэре с изображением стражников Тауэра и памятной надписью, стоит 36 $ США.
 Динарское нагорье вызывает крестьянский ледостав. Бамбуковый медведь панда изменяем. Отгонное животноводство, по определению, точно притягивает распространенный термальный источник. Горная тундра, куда входят Пик-Дистрикт, Сноудония и другие многочисленные национальные резерваты природы и парки, начинает материк.
-Щебнистое плато дорого. Тасмания, при том, что королевские полномочия находятся в руках исполнительной власти - кабинета министров, отражает цикл. Несладкое слоеное тесто, переложенное соленым сыром под названием "сирене", просветляет распространенный знаменитый Фогель-маркет на Оудевард-плаатс, например, "вентилятор" обозначает "веер-ветер", "спичка" - "палочка-чирк-огонь".'''
+Щебнистое плато дорого. Тасмания, при том, что королевские полномочия находятся в руках исполнительной власти - кабинета министров, отражает цикл. Несладкое слоеное тесто, переложенное соленым сыром под названием "сирене", просветляет распространенный знаменитый Фогель-маркет на Оудевард-плаатс, например, "вентилятор" обозначает "веер-ветер", "спичка" - "палочка-чирк-огонь".''',
+
     ]
 
     b = ProcessDocs(documents, number_of_sentences=2)
@@ -137,5 +139,3 @@ if __name__ == '__main__':
 
     [print(mini_doc) for mini_doc in mini_docs]
     [print(doc_key_words) for doc_key_words in key_words]
-
-

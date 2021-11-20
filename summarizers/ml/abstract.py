@@ -4,7 +4,8 @@ from transformers import pipeline
 def get_abstract_summary(text):
     summarizer = pipeline("summarization", model='cointegrated/rut5-base-absum')
 
-    summary_text = summarizer(text, max_length=100, min_length=5, do_sample=False)[0]['summary_text']
+    summary_text = summarizer(text, max_length=4000, min_length=5, do_sample=False)
+    summary_text = summary_text[0]['summary_text']
 
     return summary_text
 
@@ -22,5 +23,6 @@ if __name__ == '__main__':
 
     text2 = '''А русский язык? - спросил Крапивин. -Он работает, на счет этого можете не переживать. Все будет в лучшем
             виде! - Ответил Влад.'''
+
     temp = get_abstract_summary(text2)
     print(temp)
