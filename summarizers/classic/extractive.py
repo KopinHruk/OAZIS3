@@ -70,7 +70,7 @@ class ProcessDocs:
     def _summarize_document(self, document):
         sent_text = nltk.sent_tokenize(document)
         sentences_score = []
-        for sentence in sent_text:
+        for sentence in tqdm(sent_text):
             sentence_score = []
             tokenized_sentence = nltk.word_tokenize(sentence)
             for word in tokenized_sentence:
@@ -85,7 +85,8 @@ class ProcessDocs:
 
         # print(sentences_score)
         sentences_score = np.array(sentences_score)
-        ind = np.argpartition(sentences_score, -self.number_of_sentences)[-self.number_of_sentences:]
+        number_of_sentences = min(self.number_of_sentences, len(sent_text))
+        ind = np.argpartition(sentences_score, -number_of_sentences)[-number_of_sentences:]
         ind = ind[np.argsort(sentences_score[ind])]
 
         summarized_doc = ' '.join(np.array(sent_text)[ind])
@@ -105,14 +106,16 @@ class ProcessDocs:
             words_scores.append(word_score)
 
         words_scores = np.array(words_scores)
-        ind = np.argpartition(words_scores, -self.number_of_key_words)[-self.number_of_key_words:]
+
+        number_of_key_words = min(self.number_of_key_words, len(unique_words))
+        ind = np.argpartition(words_scores, -number_of_key_words)[-number_of_key_words:]
 
         return unique_words[ind]
 
     def summarize(self):
         output = []
         for document in tqdm(self.documents):
-            output.append((self._summarize_document(document), self._get_key_words(document)))
+            output.append((document, self._summarize_document(document), self._get_key_words(document)))
 
         return output
 

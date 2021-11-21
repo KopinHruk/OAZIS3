@@ -1,3 +1,6 @@
+import json
+
+from django.core.paginator import Paginator
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader
 from django import forms
@@ -18,8 +21,6 @@ class UploadForm(forms.Form):
     file = forms.FileField(widget=forms.ClearableFileInput(attrs={'class': "form-control", 'multiple': True}))
 
 
-
-
 def upload_view(request):
     template = loader.get_template('documents/upload.html')
     if request.method == 'POST':
@@ -27,34 +28,44 @@ def upload_view(request):
         form = UploadForm(request.POST, request.FILES)
         # check whether it's valid:
         if form.is_valid():
+            type = form.cleaned_data.get("type")
             config = {
-                'type': form.cleaned_data.get("type"),
+                'type': type,
                 'number_of_sentences': form.cleaned_data.get('num_sen'),
-                'number_of_key_words': form.cleaned_data.get('num_keys')
+                'number_of_key_words': form.cleaned_data.get('num_keys'),
+                'header1': 'Abstract' if type == 'ml' else 'Classic',
+                'header2': 'Extract' if type == 'ml' else 'Key Words',
 
             }
-            return process_documents(request, request.FILES.getlist('file'), config)
-            # return HttpResponseRedirect('/results/')
+            process_documents(request.FILES.getlist('file'), config)
+            return HttpResponseRedirect('/results/')
 
     form = UploadForm()
     return HttpResponse(template.render({'form': form}, request))
 
 
-def process_documents(request, documents, config):
+def process_documents(documents, config):
     documents = [document.file.read().decode('utf-8') for document in documents]
     output = process(documents, config)
 
-    template = loader.get_template('documents/results.html')
-    context = {
-        'output': output,
-    }
-    return HttpResponse(template.render(context, request))
+    with open('temp.json', 'w') as outfile:
+        json.dump({'output': output, 'config': config}, outfile)
 
 
 def result_view(request):
-    # latest_question_list = Question.objects.order_by('-pub_date')[:5]
+    with open('temp.json') as json_file:
+        data = json.load(json_file)
+    output = data['output']
+    config = data['config']
+
+    paginator = Paginator(output, 1)  # Show 25 contacts per page.
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
     template = loader.get_template('documents/results.html')
-    context = {
-        'output': None,
-    }
+
+    context = {'page_obj': page_obj,
+               'header1': config['header1'],
+               'header2': config['header2'],
+               }
     return HttpResponse(template.render(context, request))

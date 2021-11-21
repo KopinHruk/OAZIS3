@@ -16,7 +16,7 @@ def process(documents, config):
         for document in documents:
             abstract_summary = get_abstract_summary(document)
             extractive_summary = get_extractive_summary(document)
-            output.append((abstract_summary, extractive_summary))
+            output.append((document, abstract_summary, extractive_summary))
 
 
         return output

@@ -1,13 +1,21 @@
 from transformers import pipeline
-
+import math
 
 def get_abstract_summary(text):
     summarizer = pipeline("summarization", model='csebuetnlp/mT5_multilingual_XLSum')
+    max_embedding = 1024*4
 
-    summary_text = summarizer(text, max_length=4000, min_length=5, do_sample=False)
-    summary_text = summary_text[0]['summary_text']
+    summary_text_full = ''
+    num = math.ceil(len(text) / max_embedding)
+    for i in range(num):
+        start = i*max_embedding
+        end = (i+1)*max_embedding
 
-    return summary_text
+        summary_text = summarizer(text[start:end], max_length=1024, min_length=35, do_sample=False)
+        summary_text = summary_text[0]['summary_text']
+        summary_text_full += summary_text
+
+    return summary_text_full
 
 
 if __name__ == '__main__':
@@ -24,5 +32,5 @@ if __name__ == '__main__':
     text2 = '''А русский язык? - спросил Крапивин. -Он работает, на счет этого можете не переживать. Все будет в лучшем
             виде! - Ответил Влад.'''
 
-    temp = get_abstract_summary(text2)
+    temp = get_abstract_summary(text1)
     print(temp)
