@@ -87,3 +87,10 @@ def download_files(request):
     response = HttpResponse(f, content_type="text/plain")
     response['Content-Disposition'] = 'attachment; filename=results.txt'
     return response
+
+
+def secret(request):
+    template = loader.get_template('documents/secret.html')
+
+    context = {}
+    return HttpResponse(template.render(context, request))
