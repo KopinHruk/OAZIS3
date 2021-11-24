@@ -79,8 +79,11 @@ def download_files(request):
     output = data['output']
     config = data['config']
 
-
-    f = io.StringIO(config['header1'] + "\n" + output[0][1] + "\n" + config['header2'] + "\n" + output[0][2])
+    if type(output[0][2]) is list:
+        output2 = ', '.join(output[0][2])
+    else:
+        output2 = output[0][2]
+    f = io.StringIO(config['header1'] + "\n" + output[0][1] + "\n" + config['header2'] + "\n" + output2)
     response = HttpResponse(f, content_type="text/plain")
     response['Content-Disposition'] = 'attachment; filename=results.txt'
     return response

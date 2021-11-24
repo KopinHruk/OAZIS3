@@ -10,7 +10,7 @@ def get_abstract_summary(text):
         summarizer = pipeline("summarization")
 
 
-    max_embedding = 1024*4
+    max_embedding = 1024*3
 
     summary_text_full = ''
     num = math.ceil(len(text) / max_embedding)
@@ -18,7 +18,7 @@ def get_abstract_summary(text):
         start = i*max_embedding
         end = (i+1)*max_embedding
 
-        summary_text = summarizer(text[start:end], max_length=1024, min_length=35, do_sample=False)
+        summary_text = summarizer(text[start:end][:1024], max_length=1024, min_length=35, do_sample=False)
         summary_text = summary_text[0]['summary_text']
         summary_text_full += summary_text
 
