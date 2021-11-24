@@ -1,8 +1,15 @@
 from transformers import pipeline
 import math
+from langdetect import detect_langs
 
 def get_abstract_summary(text):
-    summarizer = pipeline("summarization", model='csebuetnlp/mT5_multilingual_XLSum')
+    scores = detect_langs(text)
+    if scores[0].lang == 'ru':
+        summarizer = pipeline("summarization", model='IlyaGusev/mbart_ru_sum_gazeta')
+    else:
+        summarizer = pipeline("summarization")
+
+
     max_embedding = 1024*4
 
     summary_text_full = ''

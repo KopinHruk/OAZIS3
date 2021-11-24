@@ -1,9 +1,9 @@
 from summarizer import Summarizer
 
 
-def get_extractive_summary(raw_input):
+def get_extractive_summary(raw_input, number_of_sentences=None):
     model = Summarizer()
-    processed_output = model(raw_input)
+    processed_output = model(raw_input, num_sentences=number_of_sentences)
 
     return processed_output
 

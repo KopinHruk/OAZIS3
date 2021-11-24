@@ -110,7 +110,7 @@ class ProcessDocs:
         number_of_key_words = min(self.number_of_key_words, len(unique_words))
         ind = np.argpartition(words_scores, -number_of_key_words)[-number_of_key_words:]
 
-        return unique_words[ind]
+        return unique_words[ind].tolist()
 
     def summarize(self):
         output = []
