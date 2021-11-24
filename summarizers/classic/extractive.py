@@ -53,6 +53,8 @@ class ProcessDocs:
         self.number_of_sentences = number_of_sentences
         self.number_of_key_words = number_of_key_words
 
+        nltk.download('punkt')
+
     def get_IDF(self, word):
         num_docs_with_word = 0
         for document in self.documents:
